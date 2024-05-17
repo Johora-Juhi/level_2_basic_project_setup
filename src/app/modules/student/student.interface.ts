@@ -1,13 +1,13 @@
 import { Schema, model, connect } from 'mongoose';
 
 
-type userName = {
+export type UserName = {
     firtName: string;
     middlename: string;
     lastName: string;
 }
 
-type LocalGurdian = {
+export type LocalGurdian = {
     name: string;
     occupation: string;
     contactNo: string;
@@ -15,7 +15,7 @@ type LocalGurdian = {
     relation: string;
 }
 
-type Gurdian = {
+export type Gurdian = {
     fatherName: string;
     fatherOccupation: string;
     fatherContactNo: string;
@@ -25,7 +25,7 @@ type Gurdian = {
 }
 export type Student = {
     id: string;
-    name: userName;
+    name: UserName;
     gender: "male" | "female",
     dateOfBirth: string;
     contactNo: string;
