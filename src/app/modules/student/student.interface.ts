@@ -1,41 +1,40 @@
-import { Schema, model, connect } from 'mongoose';
-
+import { Schema, model, connect } from "mongoose";
 
 export type UserName = {
-    firtName: string;
-    middlename: string;
-    lastName: string;
-}
+  firstName: string;
+  middlename: string;
+  lastName: string;
+};
 
-export type LocalGurdian = {
-    name: string;
-    occupation: string;
-    contactNo: string;
-    address: string;
-    relation: string;
-}
+export type LocalGuardian = {
+  name: string;
+  occupation: string;
+  contactNo: string;
+  address: string;
+  relation: string;
+};
 
-export type Gurdian = {
-    fatherName: string;
-    fatherOccupation: string;
-    fatherContactNo: string;
-    motherName: string;
-    motherOccupation: string;
-    motherContactNo: string;
-}
+export type Guardian = {
+  fatherName: string;
+  fatherOccupation: string;
+  fatherContactNo: string;
+  motherName: string;
+  motherOccupation: string;
+  motherContactNo: string;
+};
 export type Student = {
-    id: string;
-    name: UserName;
-    gender: "male" | "female",
-    dateOfBirth: string;
-    contactNo: string;
-    emengencyContactNo: string;
-    email: string;
-    bloodGroup?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
-    presentAddress: string;
-    permanentAddress: string;
-    gurdian: Gurdian,
-    localGurdian: LocalGurdian,
-    profileImage?: string,
-    isActive: 'active' | 'blocked'
-}
+  id: string;
+  name: UserName;
+  gender: "male" | "female";
+  dateOfBirth: string;
+  contactNo: string;
+  emergencyContactNo: string;
+  email: string;
+  bloodGroup?: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-";
+  presentAddress: string;
+  permanentAddress: string;
+  guardian: Guardian;
+  localGuardian: LocalGuardian;
+  profileImage?: string;
+  isActive: "active" | "blocked";
+};
