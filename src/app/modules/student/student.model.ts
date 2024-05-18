@@ -7,9 +7,25 @@ import {
 } from "./student.interface";
 
 const userNameSchema = new Schema<UserName>({
-  firstName: { type: String, required: true },
-  middlename: String,
-  lastName: { type: String, required: true },
+  firstName: {
+    type: String,
+    trim: true,
+    required: [true, "Firstname is required"],
+    maxlength: [20, "FirstName can not be more then 20 charecter"],
+    validate: {
+      validator: function (value: string) {
+        const firstNameStr = value.charAt(0).toUpperCase() + value.slice(1);
+        return firstNameStr === value;
+      },
+      message: "{VALUE} is not in capitalize format",
+    },
+  },
+  middleName: String,
+  lastName: {
+    type: String,
+    trim: true,
+    required: [true, "Lastname is required"],
+  },
 });
 
 const gurdianSchema = new Schema<Guardian>({
@@ -30,20 +46,55 @@ const localGurdianSchema = new Schema<LocalGuardian>({
 });
 
 const studentSchema = new Schema<Student>({
-  id: String,
-  name: userNameSchema,
-  gender: ["male", "female"], //enum type not array
-  dateOfBirth: { type: String, required: true },
-  contactNo: { type: String, required: true },
-  emergencyContactNo: { type: String, required: true },
-  email: { type: String, required: true },
-  bloodGroup: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
-  presentAddress: { type: String, required: true },
-  permanentAddress: { type: String, required: true },
-  guardian: gurdianSchema,
-  localGuardian: localGurdianSchema,
+  id: { type: String, required: true, unique: true },
+  name: {
+    type: userNameSchema,
+    required: [true, "Student Name is required"],
+  },
+  gender: {
+    type: String,
+    enum: {
+      values: ["male", "female"],
+      message: "The gender field must be male or female",
+    },
+    required: true,
+  }, //enum type not array
+  dateOfBirth: { type: String, required: [true, "Date of birth is required"] },
+  contactNo: { type: String, required: [true, "Contact no is required"] },
+  emergencyContactNo: {
+    type: String,
+    required: [true, "Emergency contact no is required"],
+  },
+  email: { type: String, required: [true, "Email is required"], unique: true },
+  bloodGroup: {
+    type: String,
+    enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+  },
+  presentAddress: {
+    type: String,
+    required: [true, "Present Address is required"],
+  },
+  permanentAddress: {
+    type: String,
+    required: [true, "Permanent Address is required"],
+  },
+  guardian: {
+    type: gurdianSchema,
+    required: [true, "Gurdian information is required"],
+  },
+  localGuardian: {
+    type: localGurdianSchema,
+    required: [true, "Local Gurdian information is required"],
+  },
   profileImage: String,
-  isActive: ["active", "blocked"],
+  isActive: {
+    type: String,
+    enum: {
+      values: ["active", "blocked"],
+      message: " Student can either be active or blocked",
+    },
+    required: [true, "Student status is required"],
+  },
 });
 
 export const StudentModel = model<Student>("Student", studentSchema);
