@@ -1,6 +1,6 @@
 import { Schema, model, connect } from "mongoose";
 import {
-  StudentMethods,
+  // StudentMethods,
   StudentModel,
   TGuardian,
   TLocalGuardian,
@@ -52,7 +52,8 @@ const localGurdianSchema = new Schema<TLocalGuardian>({
   relation: { type: String, required: true },
 });
 
-const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
+// const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
+const studentSchema = new Schema<TStudent, StudentModel>({
   id: { type: String, required: true, unique: true },
   name: {
     type: userNameSchema,
@@ -112,9 +113,16 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
   },
 });
 
-studentSchema.methods.isStudentExists = async function (id: string) {
+// for creatin custom static method
+studentSchema.statics.isStudentExists = async function (id: string) {
   const isStudentExists = await Student.findOne({ id });
   return isStudentExists;
 };
+
+// for creatin instance
+// studentSchema.methods.isStudentExists = async function (id: string) {
+//   const isStudentExists = await Student.findOne({ id });
+//   return isStudentExists;
+// };
 
 export const Student = model<TStudent, StudentModel>("Student", studentSchema);

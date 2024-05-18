@@ -40,8 +40,13 @@ export type TStudent = {
   isActive: "active" | "blocked";
 };
 
-export type StudentMethods = {
-  isStudentExists(id:string) : Promise<TStudent | null>
+// for creatin custom stattic method
+export interface StudentModel extends Model<TStudent> {
+  isStudentExists(id: string): Promise<TStudent | null>;
 }
+// for creatin custom instacce method
+// export type StudentMethods = {
+//   isStudentExists(id:string) : Promise<TStudent | null>
+// }
 
-export type StudentModel = Model<TStudent, {}, StudentMethods>
+// export type StudentModel = Model<TStudent, {}, StudentMethods>
