@@ -60,7 +60,6 @@ const studentSchema = new Schema<TStudent, StudentModel>({
   password: {
     type: String,
     required: true,
-    unique: true,
     minlength: [8, "Password can not be less then 8 character"],
   },
   name: {
@@ -119,6 +118,7 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     },
     required: [true, "Student status is required"],
   },
+  isDeleted: {type: Boolean, default: false}
 });
 
 // for creatin custom static method
@@ -127,19 +127,27 @@ studentSchema.statics.isStudentExists = async function (id: string) {
   return isStudentExists;
 };
 
-// pre save middleware/ hook : will work on create() and save()
-studentSchema.pre("save", async function (next) {
-  const user = this;
-
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.bcrypt_salt_rounds)
-  );
-});
 // for creatin instance
 // studentSchema.methods.isStudentExists = async function (id: string) {
 //   const isStudentExists = await Student.findOne({ id });
 //   return isStudentExists;
 // };
+
+// pre save middleware/ hook : will work on create() and save()
+studentSchema.pre("save", async function (next) {
+  const user = this; // doc
+
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds)
+  );
+  next();
+});
+
+// post save middleware/ hook : will work on create() and save()
+studentSchema.post("save", function (doc, next) {
+  doc.password = "";
+  next();
+});
 
 export const Student = model<TStudent, StudentModel>("Student", studentSchema);

@@ -73,6 +73,7 @@ const studentValidationSchema = z.object({
     .refine((value) => !!value, {
       message: "Student status is required",
     }),
+  isDeleted: z.boolean()
 });
 
 export default studentValidationSchema;

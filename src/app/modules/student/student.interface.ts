@@ -39,6 +39,7 @@ export type TStudent = {
   localGuardian: TLocalGuardian;
   profileImage?: string;
   isActive: "active" | "blocked";
+  isDeleted: boolean;
 };
 
 // for creatin custom stattic method
