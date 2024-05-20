@@ -5,6 +5,6 @@ const router = express.Router();
 router.post("/create_student", StudentController.createStudent); // will call controller function
 router.get("/", StudentController.getAllStudents); // will call controller function
 router.get("/:studentId", StudentController.getSingleStudent);
-router.post("/:studentId", StudentController.deleteStudent);
+router.delete("/:studentId", StudentController.deleteStudent);
 
 export const StudentRoutes = router;

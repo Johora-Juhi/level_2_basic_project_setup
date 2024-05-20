@@ -118,7 +118,7 @@ const studentSchema = new Schema<TStudent, StudentModel>({
     },
     required: [true, "Student status is required"],
   },
-  isDeleted: {type: Boolean, default: false}
+  isDeleted: { type: Boolean, default: false },
 });
 
 // for creatin custom static method
@@ -150,4 +150,21 @@ studentSchema.post("save", function (doc, next) {
   next();
 });
 
+// pre query middleware hook : will work on query
+studentSchema.pre("find", async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+studentSchema.pre("findOne", async function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+// {$match : { id : studentId}}
+
+studentSchema.pre("aggregate", async function (next) {
+  this.pipeline().unshift({$match: { isDeleted: { $ne: true } }}); // to add the check before the existin check
+  next();
+});
 export const Student = model<TStudent, StudentModel>("Student", studentSchema);
