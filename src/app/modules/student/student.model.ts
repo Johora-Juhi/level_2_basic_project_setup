@@ -55,70 +55,86 @@ const localGurdianSchema = new Schema<TLocalGuardian>({
 });
 
 // const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
-const studentSchema = new Schema<TStudent, StudentModel>({
-  id: { type: String, required: true, unique: true },
-  password: {
-    type: String,
-    required: true,
-    minlength: [8, "Password can not be less then 8 character"],
-  },
-  name: {
-    type: userNameSchema,
-    required: [true, "Student Name is required"],
-  },
-  gender: {
-    type: String,
-    enum: {
-      values: ["male", "female"],
-      message: "The gender field must be male or female",
+const studentSchema = new Schema<TStudent, StudentModel>(
+  {
+    id: { type: String, required: true, unique: true },
+    password: {
+      type: String,
+      required: true,
+      minlength: [8, "Password can not be less then 8 character"],
     },
-    required: true,
-  }, //enum type not array
-  dateOfBirth: { type: String, required: [true, "Date of birth is required"] },
-  contactNo: { type: String, required: [true, "Contact no is required"] },
-  emergencyContactNo: {
-    type: String,
-    required: [true, "Emergency contact no is required"],
-  },
-  email: {
-    type: String,
-    required: [true, "Email is required"],
-    unique: true,
-    validate: {
-      validator: (value: string) => validator.isEmail(value),
-      message: "{VALUE} is not a valid email",
+    name: {
+      type: userNameSchema,
+      required: [true, "Student Name is required"],
     },
-  },
-  bloodGroup: {
-    type: String,
-    enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
-  },
-  presentAddress: {
-    type: String,
-    required: [true, "Present Address is required"],
-  },
-  permanentAddress: {
-    type: String,
-    required: [true, "Permanent Address is required"],
-  },
-  guardian: {
-    type: gurdianSchema,
-    required: [true, "Gurdian information is required"],
-  },
-  localGuardian: {
-    type: localGurdianSchema,
-    required: [true, "Local Gurdian information is required"],
-  },
-  profileImage: String,
-  isActive: {
-    type: String,
-    enum: {
-      values: ["active", "blocked"],
-      message: " Student can either be active or blocked",
+    gender: {
+      type: String,
+      enum: {
+        values: ["male", "female"],
+        message: "The gender field must be male or female",
+      },
+      required: true,
+    }, //enum type not array
+    dateOfBirth: {
+      type: String,
+      required: [true, "Date of birth is required"],
     },
-    required: [true, "Student status is required"],
+    contactNo: { type: String, required: [true, "Contact no is required"] },
+    emergencyContactNo: {
+      type: String,
+      required: [true, "Emergency contact no is required"],
+    },
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      validate: {
+        validator: (value: string) => validator.isEmail(value),
+        message: "{VALUE} is not a valid email",
+      },
+    },
+    bloodGroup: {
+      type: String,
+      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+    },
+    presentAddress: {
+      type: String,
+      required: [true, "Present Address is required"],
+    },
+    permanentAddress: {
+      type: String,
+      required: [true, "Permanent Address is required"],
+    },
+    guardian: {
+      type: gurdianSchema,
+      required: [true, "Gurdian information is required"],
+    },
+    localGuardian: {
+      type: localGurdianSchema,
+      required: [true, "Local Gurdian information is required"],
+    },
+    profileImage: String,
+    isActive: {
+      type: String,
+      enum: {
+        values: ["active", "blocked"],
+        message: " Student can either be active or blocked",
+      },
+      required: [true, "Student status is required"],
+    },
+    isDeleted: { type: Boolean, default: false },
   },
-  isDeleted: { type: Boolean, default: false },
+  {
+    toJSON: {
+      virtuals: true,
+    },
+  }
+);
+
+// virtual
+
+studentSchema.virtual("fullname").get(function () {
+  return `${this.name.firstName} ${this.name.middleName} ${this.name.middleName}`;
 });
 
 // for creatin custom static method
@@ -164,7 +180,7 @@ studentSchema.pre("findOne", async function (next) {
 // {$match : { id : studentId}}
 
 studentSchema.pre("aggregate", async function (next) {
-  this.pipeline().unshift({$match: { isDeleted: { $ne: true } }}); // to add the check before the existin check
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } }); // to add the check before the existin check
   next();
 });
 export const Student = model<TStudent, StudentModel>("Student", studentSchema);
