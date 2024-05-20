@@ -8,6 +8,8 @@ import {
   TUserName,
 } from "./student.interface";
 import validator from "validator";
+import bcrypt from "bcrypt";
+import config from "../../config";
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -55,6 +57,12 @@ const localGurdianSchema = new Schema<TLocalGuardian>({
 // const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
 const studentSchema = new Schema<TStudent, StudentModel>({
   id: { type: String, required: true, unique: true },
+  password: {
+    type: String,
+    required: true,
+    unique: true,
+    minlength: [8, "Password can not be less then 8 character"],
+  },
   name: {
     type: userNameSchema,
     required: [true, "Student Name is required"],
@@ -119,6 +127,15 @@ studentSchema.statics.isStudentExists = async function (id: string) {
   return isStudentExists;
 };
 
+// pre save middleware/ hook : will work on create() and save()
+studentSchema.pre("save", async function (next) {
+  const user = this;
+
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds)
+  );
+});
 // for creatin instance
 // studentSchema.methods.isStudentExists = async function (id: string) {
 //   const isStudentExists = await Student.findOne({ id });

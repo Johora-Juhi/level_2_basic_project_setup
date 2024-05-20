@@ -41,6 +41,7 @@ const studentValidationSchema = z.object({
   name: userNameValidationSchema.refine((value) => !!value, {
     message: "Student Name is required",
   }),
+  password: z.string().min(8, "Password can not be less then 8 charecters"),
   gender: z.enum(["male", "female"], {
     errorMap: () => ({ message: "The gender field must be male or female" }),
   }),
