@@ -58,10 +58,10 @@ const localGurdianSchema = new Schema<TLocalGuardian>({
 const studentSchema = new Schema<TStudent, StudentModel>(
   {
     id: { type: String, required: true, unique: true },
-    password: {
-      type: String,
-      required: true,
-      minlength: [8, "Password can not be less then 8 character"],
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, "User id is required"],
+      unique: true,
     },
     name: {
       type: userNameSchema,
@@ -114,15 +114,6 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       required: [true, "Local Gurdian information is required"],
     },
     profileImage: String,
-    isActive: {
-      type: String,
-      enum: {
-        values: ["active", "blocked"],
-        message: " Student can either be active or blocked",
-      },
-      required: [true, "Student status is required"],
-    },
-    isDeleted: { type: Boolean, default: false },
   },
   {
     toJSON: {
@@ -153,16 +144,16 @@ studentSchema.statics.isStudentExists = async function (id: string) {
 studentSchema.pre("save", async function (next) {
   const user = this; // doc
 
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.bcrypt_salt_rounds)
-  );
+  // user.password = await bcrypt.hash(
+  //   user.password,
+  //   Number(config.bcrypt_salt_rounds)
+  // );
   next();
 });
 
 // post save middleware/ hook : will work on create() and save()
 studentSchema.post("save", function (doc, next) {
-  doc.password = "";
+  // doc.password = "";
   next();
 });
 

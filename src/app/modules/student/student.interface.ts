@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 
 export type TUserName = {
   firstName: string;
@@ -25,7 +25,7 @@ export type TGuardian = {
 
 export type TStudent = {
   id: string;
-  password: string;
+  user: Types.ObjectId;
   name: TUserName;
   gender: "male" | "female";
   dateOfBirth: string;
@@ -38,8 +38,6 @@ export type TStudent = {
   guardian: TGuardian;
   localGuardian: TLocalGuardian;
   profileImage?: string;
-  isActive: "active" | "blocked";
-  isDeleted: boolean;
 };
 
 // for creatin custom stattic method
