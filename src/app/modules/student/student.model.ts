@@ -1,4 +1,4 @@
-import { Schema, model, connect } from "mongoose";
+import { Schema, model } from "mongoose";
 import {
   // StudentMethods,
   StudentModel,
@@ -8,8 +8,6 @@ import {
   TUserName,
 } from "./student.interface";
 import validator from "validator";
-import bcrypt from "bcrypt";
-import config from "../../config";
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -140,31 +138,14 @@ studentSchema.statics.isStudentExists = async function (id: string) {
 //   return isStudentExists;
 // };
 
-// pre save middleware/ hook : will work on create() and save()
-studentSchema.pre("save", async function (next) {
-  const user = this; // doc
-
-  // user.password = await bcrypt.hash(
-  //   user.password,
-  //   Number(config.bcrypt_salt_rounds)
-  // );
-  next();
-});
-
-// post save middleware/ hook : will work on create() and save()
-studentSchema.post("save", function (doc, next) {
-  // doc.password = "";
-  next();
-});
-
 // pre query middleware hook : will work on query
 studentSchema.pre("find", async function (next) {
-  this.find({ isDeleted: { $ne: true } });
+  // this.find({ isDeleted: { $ne: true } });
   next();
 });
 
 studentSchema.pre("findOne", async function (next) {
-  this.find({ isDeleted: { $ne: true } });
+  // this.find({ isDeleted: { $ne: true } });
   next();
 });
 

@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 import { Schema, model } from "mongoose";
 import { TUser } from "./user.interface";
+import bcrypt from "bcrypt";
+import config from "../../config";
 
 const UserSchema = new Schema<TUser>(
   {
@@ -34,4 +37,21 @@ const UserSchema = new Schema<TUser>(
   }
 );
 
-export const User = model<TUser>('User', UserSchema);
+// pre save middleware/ hook : will work on create() and save()
+UserSchema.pre("save", async function (next) {
+  const user = this; // doc
+
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_rounds)
+  );
+  next();
+});
+
+// post save middleware/ hook : will work on create() and save()
+UserSchema.post("save", function (doc, next) {
+  doc.password = "";
+  next();
+});
+
+export const User = model<TUser>("User", UserSchema);
