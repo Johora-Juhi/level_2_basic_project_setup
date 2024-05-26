@@ -36,44 +36,54 @@ const localGuardianValidationSchema = z.object({
   relation: z.string().min(1, "Relation with local guardian is required"),
 });
 
-const studentValidationSchema = z.object({
-  id: z.string().min(1, "Student ID is required"),
-  name: userNameValidationSchema.refine((value) => !!value, {
-    message: "Student Name is required",
+const createStudentValidationSchema = z.object({
+  body: z.object({
+    password: z.string().min(8).optional(),
+    student: z.object({
+      name: userNameValidationSchema.refine((value) => !!value, {
+        message: "Student Name is required",
+      }),
+      // password: z.string().min(8, "Password can not be less then 8 charecters"),
+      gender: z.enum(["male", "female"], {
+        errorMap: () => ({
+          message: "The gender field must be male or female",
+        }),
+      }),
+      dateOfBirth: z.string().min(1, "Date of birth is required"),
+      contactNo: z.string().min(1, "Contact number is required"),
+      emergencyContactNo: z
+        .string()
+        .min(1, "Emergency contact number is required"),
+      email: z
+        .string()
+        .email({ message: "Email is not valid" })
+        .min(1, "Email is required"),
+      bloodGroup: z
+        .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
+        .optional(),
+      presentAddress: z.string().min(1, "Present address is required"),
+      permanentAddress: z.string().min(1, "Permanent address is required"),
+      guardian: guardianValidationSchema.refine((value) => !!value, {
+        message: "Guardian information is required",
+      }),
+      localGuardian: localGuardianValidationSchema.refine((value) => !!value, {
+        message: "Local guardian information is required",
+      }),
+      profileImage: z.string().optional(),
+      // isActive: z
+      //   .enum(["active", "blocked"], {
+      //     errorMap: () => ({
+      //       message: "Student status can either be active or blocked",
+      //     }),
+      //   })
+      //   .refine((value) => !!value, {
+      //     message: "Student status is required",
+      //   }),
+      // isDeleted: z.boolean()
+    }),
   }),
-  // password: z.string().min(8, "Password can not be less then 8 charecters"),
-  gender: z.enum(["male", "female"], {
-    errorMap: () => ({ message: "The gender field must be male or female" }),
-  }),
-  dateOfBirth: z.string().min(1, "Date of birth is required"),
-  contactNo: z.string().min(1, "Contact number is required"),
-  emergencyContactNo: z.string().min(1, "Emergency contact number is required"),
-  email: z
-    .string()
-    .email({ message: "Email is not valid" })
-    .min(1, "Email is required"),
-  bloodGroup: z
-    .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
-    .optional(),
-  presentAddress: z.string().min(1, "Present address is required"),
-  permanentAddress: z.string().min(1, "Permanent address is required"),
-  guardian: guardianValidationSchema.refine((value) => !!value, {
-    message: "Guardian information is required",
-  }),
-  localGuardian: localGuardianValidationSchema.refine((value) => !!value, {
-    message: "Local guardian information is required",
-  }),
-  profileImage: z.string().optional(),
-  // isActive: z
-  //   .enum(["active", "blocked"], {
-  //     errorMap: () => ({
-  //       message: "Student status can either be active or blocked",
-  //     }),
-  //   })
-  //   .refine((value) => !!value, {
-  //     message: "Student status is required",
-  //   }),
-  // isDeleted: z.boolean()
 });
 
-export default studentValidationSchema;
+export const studentValidations = {
+  createStudentValidationSchema,
+};
