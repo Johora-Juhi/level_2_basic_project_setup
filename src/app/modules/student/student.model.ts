@@ -112,6 +112,10 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       type: localGurdianSchema,
       required: [true, "Local Gurdian information is required"],
     },
+    admissionSemester: {
+      type: Schema.Types.ObjectId,
+      ref: "AcademicSemester",
+    },
     profileImage: String,
   },
   {

@@ -11,6 +11,29 @@ const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {
   const result = AcademicSemester.create(payload);
   return result;
 };
+const updateAcademicSemesterIntoDB = async (
+  id: string,
+  payload: Partial<TAcademicSemester>
+) => {
+  // check the name code coordination
+  if (
+    payload.name &&
+    payload.code &&
+    academicSemesterNameCodeMapper[payload.name] !== payload.code
+  ) {
+    throw new Error("The semester code is incorrect!");
+  }
+
+  const result = AcademicSemester.findByIdAndUpdate(id, payload, {
+    new: true,
+  });
+
+  if (!result) {
+    throw new Error(`Academic semester with ID ${id} not found`);
+  }
+
+  return result;
+};
 
 const getAllAcademicSemesterFromDB = async () => {
   const result = AcademicSemester.find({});
@@ -24,6 +47,7 @@ const getSingleAcademicSemesterFromDB = async (id: string) => {
 
 export const academicSemesterServices = {
   createAcademicSemesterIntoDB,
+  updateAcademicSemesterIntoDB,
   getAllAcademicSemesterFromDB,
   getSingleAcademicSemesterFromDB,
 };
