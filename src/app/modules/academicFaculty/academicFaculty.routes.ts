@@ -11,7 +11,7 @@ router.post(
   AcademicFacultyController.createAcademicFaculty
 );
 router.patch(
-  "/update-faculty/:facultyId",
+  "/:facultyId",
   ValidateRequest(AcademicFacultyValidation.AcademicFacultyValidationSchema),
   AcademicFacultyController.updateAcademicFaculty
 );
