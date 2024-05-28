@@ -16,13 +16,27 @@ const findLastStudentId = async () => {
     })
     .lean();
 
-  return lastStudentId?.id ? parseInt(lastStudentId.id.slice(-4)) : 0;
+  return lastStudentId?.id;
 };
 
 export const generateStudentId = async (payload: TAcademicSemester) => {
-  const currentId = await findLastStudentId();
+  let currentId = (0).toString();
 
-  const uniqueId = (currentId + 1).toString().padStart(4, "0");
+  const lastStudentId = await findLastStudentId();
+  const lastStudentSemesterYear = lastStudentId?.substring(0, 4);
+  const lastStudentSemesterCode = lastStudentId?.substring(4, 6);
+  const currentYear = payload.year;
+  const currentSemesterCode = payload.code;
+
+  if (
+    lastStudentId &&
+    lastStudentSemesterYear === currentYear &&
+    lastStudentSemesterCode === currentSemesterCode
+  ) {
+    currentId = lastStudentId.substring(6);
+  }
+
+  const uniqueId = (Number(currentId) + 1).toString().padStart(4, "0");
   const studentId = `${payload.year}${payload.code}${uniqueId}`;
   return studentId;
 };
