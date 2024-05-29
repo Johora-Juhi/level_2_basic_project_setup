@@ -70,6 +70,7 @@ const createStudentValidationSchema = z.object({
         message: "Local guardian information is required",
       }),
       admissionSemester: z.string(),
+      academicDepartment: z.string(),
       profileImage: z.string().optional(),
       // isActive: z
       //   .enum(["active", "blocked"], {
