@@ -39,7 +39,33 @@ const updateSingleStudentIntoDB = async (
 ) => {
   // const result = await Student.findOne({ id: studentId });
 
-  const result = await Student.findOneAndUpdate({ id: studentId }, payload);
+  const { name, guardian, localGuardian, ...remainingStudentData } = payload;
+
+  const modifiedUpdateData: Record<string, unknown> = {
+    ...remainingStudentData,
+  };
+
+  if (name && Object.keys(name).length) {
+    for (const [key, value] of Object.entries(name)) {
+      modifiedUpdateData[`name.${key}`] = value;
+    }
+  }
+
+  if (guardian && Object.keys(guardian).length) {
+    for (const [key, value] of Object.entries(guardian)) {
+      modifiedUpdateData[`guardian.${key}`] = value;
+    }
+  }
+  if (localGuardian && Object.keys(localGuardian).length) {
+    for (const [key, value] of Object.entries(localGuardian)) {
+      modifiedUpdateData[`localGuardian.${key}`] = value;
+    }
+  }
+  console.log(modifiedUpdateData);
+  const result = await Student.findOneAndUpdate(
+    { id: studentId },
+    modifiedUpdateData
+  );
   return result;
 };
 
