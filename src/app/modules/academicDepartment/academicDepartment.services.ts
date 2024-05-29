@@ -9,7 +9,7 @@ const updateAcademicDepartmentIntoDB = async (
   id: string,
   payload: Partial<TACademicDepartment>
 ) => {
-  const result = AcademicDepartment.findByIdAndUpdate(id, payload, {
+  const result = AcademicDepartment.findOneAndUpdate({ _id: id }, payload, {
     new: true,
   });
 
