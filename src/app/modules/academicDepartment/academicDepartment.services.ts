@@ -1,3 +1,5 @@
+import httpStatus from "http-status";
+import AppError from "../../error/AppError";
 import { TACademicDepartment } from "./academicDepartment.interface";
 import { AcademicDepartment } from "./academicDepartment.model";
 
@@ -14,7 +16,10 @@ const updateAcademicDepartmentIntoDB = async (
   });
 
   if (!result) {
-    throw new Error(`Academic Department with ID ${id} not found`);
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      `Academic Department with ID ${id} not found`
+    );
   }
 
   return result;

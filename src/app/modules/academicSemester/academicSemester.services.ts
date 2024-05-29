@@ -1,3 +1,5 @@
+import httpStatus from "http-status";
+import AppError from "../../error/AppError";
 import { academicSemesterNameCodeMapper } from "./academicSemester.constants";
 import { TAcademicSemester } from "./academicSemester.interface";
 import { AcademicSemester } from "./academicSemester.model";
@@ -29,7 +31,10 @@ const updateAcademicSemesterIntoDB = async (
   });
 
   if (!result) {
-    throw new Error(`Academic semester with ID ${id} not found`);
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      `Academic semester with ID ${id} not found`
+    );
   }
 
   return result;
