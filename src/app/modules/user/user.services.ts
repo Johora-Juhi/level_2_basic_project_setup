@@ -10,9 +10,7 @@ import { generateStudentId } from "./user.utils";
 import mongoose from "mongoose";
 
 const createStudentIntoDB = async (password: string, studentData: TStudent) => {
-  // if (await Student.isStudentExists(studentData.id)) {
-  //   throw new Error("User id already existss");
-  // }
+
   const userData: Partial<TUser> = {};
 
   // set user password
@@ -33,7 +31,7 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   const session = await mongoose.startSession();
 
   try {
-    session.startTransaction();
+     session.startTransaction();
     // set student id
     userData.id = await generateStudentId(academicSemesterData);
 
@@ -58,14 +56,14 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
         );
       }
 
-      session.commitTransaction();
-      session.endSession();
+      await session.commitTransaction();
+      await session.endSession();
 
       return newStudent;
     }
   } catch (error) {
-    session.abortTransaction();
-    session.endSession();
+    await session.abortTransaction();
+    await session.endSession();
   }
 
   // for creatin instance
