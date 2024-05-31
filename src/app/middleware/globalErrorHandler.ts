@@ -7,6 +7,7 @@ import { TErrorSources } from "../instances/error";
 import handleZodError from "../error/handleZoderror";
 import handleValidationError from "../error/handleValidationError";
 import handleCastError from "../error/handleCastError";
+import handleDuplicateError from "../error/handleDuplicateError";
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   let statusCode = err.statusCode || 500;
