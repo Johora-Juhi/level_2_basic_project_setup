@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import globalErrorHandler from "./app/middleware/globalErrorHandler";
@@ -13,10 +14,12 @@ app.use(cors());
 // application route
 app.use("/api/v1", router);
 
-app.get("/", (req: Request, res: Response) => {
-  res.send("hello world");
-});
+const test = (req: Request, res: Response) => {
+  Promise.reject();
+  // res.send("hello world");
+};
 
+app.use("/", test);
 // not found
 app.use(notFound);
 
