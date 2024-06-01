@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import config from "../../config";
 import AppError from "../../error/AppError";
@@ -10,7 +11,6 @@ import { generateStudentId } from "./user.utils";
 import mongoose from "mongoose";
 
 const createStudentIntoDB = async (password: string, studentData: TStudent) => {
-
   const userData: Partial<TUser> = {};
 
   // set user password
@@ -31,7 +31,7 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   const session = await mongoose.startSession();
 
   try {
-     session.startTransaction();
+    session.startTransaction();
     // set student id
     userData.id = await generateStudentId(academicSemesterData);
 
@@ -61,9 +61,11 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
 
       return newStudent;
     }
-  } catch (error) {
+  } catch (error: any) {
     await session.abortTransaction();
     await session.endSession();
+
+    throw new Error(error);
   }
 
   // for creatin instance
