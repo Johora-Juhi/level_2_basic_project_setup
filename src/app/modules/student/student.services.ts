@@ -6,17 +6,28 @@ import { User } from "../user/user.model";
 import { TStudent } from "./student.interface";
 
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
-  let searchTerm = "";
+  const searchTerm = query?.searchTerm || "";
 
-  if (query?.searchTerm) {
-    searchTerm = query?.searchTerm as string;
-  }
+  const sort: string = (query?.sort as string) || "-id";
+  const limit: number = query?.limit ? Number(query.limit) : 1;
 
-  const result = await Student.find({
+  const queryObj = { ...query };
+
+  const excludedTerm = ["searchTerm", "limit", "sort"];
+
+  excludedTerm.forEach((el) => delete queryObj[el]);
+
+  const searchQuery = Student.find({
     $or: ["email", "name.firstName", "permanentAddress"].map((field) => ({
       [field]: { $regex: searchTerm, $options: "i" },
     })),
-  })
+  });
+  const filterQuery = searchQuery.find(queryObj);
+
+  const sortQuery = filterQuery.sort(sort);
+
+  const limitQuery = await sortQuery
+    .limit(limit)
     .populate("user")
     .populate("admissionSemester")
     .populate({
@@ -26,7 +37,7 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
       },
     });
 
-  return result;
+  return limitQuery;
 };
 
 const getSingleStudentFromDB = async (studentId: string) => {
