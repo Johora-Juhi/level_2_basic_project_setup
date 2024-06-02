@@ -6,14 +6,18 @@ import { User } from "../user/user.model";
 import { TStudent } from "./student.interface";
 
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
+  
   const searchTerm = query?.searchTerm || "";
-
   const sort: string = (query?.sort as string) || "-id";
   const limit: number = query?.limit ? Number(query.limit) : 1;
+  const skip: number = query?.page ? (Number(query.page) - 1) * limit : 0;
+  const fileds: string = query.fields
+    ? (query.fields as string).split(",").join(" ")
+    : "-__v";
 
   const queryObj = { ...query };
 
-  const excludedTerm = ["searchTerm", "limit", "sort"];
+  const excludedTerm = ["searchTerm", "limit", "sort", "page", "fields"];
 
   excludedTerm.forEach((el) => delete queryObj[el]);
 
@@ -22,12 +26,17 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
       [field]: { $regex: searchTerm, $options: "i" },
     })),
   });
+
   const filterQuery = searchQuery.find(queryObj);
 
   const sortQuery = filterQuery.sort(sort);
 
-  const limitQuery = await sortQuery
-    .limit(limit)
+  const paginateQuery = sortQuery.skip(skip);
+
+  const limitQuery = paginateQuery.limit(limit);
+
+  const fieldsQuery = await limitQuery
+    .select(fileds)
     .populate("user")
     .populate("admissionSemester")
     .populate({
@@ -37,7 +46,7 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
       },
     });
 
-  return limitQuery;
+  return fieldsQuery;
 };
 
 const getSingleStudentFromDB = async (studentId: string) => {
