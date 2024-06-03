@@ -57,16 +57,7 @@ class QueryBuilder<T> {
       ? (this?.query.fields as string).split(",").join(" ")
       : "-__v";
 
-    this.modelQuery = this.modelQuery
-      .select(fields)
-      .populate("user")
-      .populate("admissionSemester")
-      .populate({
-        path: "academicDepartment",
-        populate: {
-          path: "academicFaculty",
-        },
-      });
+    this.modelQuery = this.modelQuery.select(fields);
 
     return this;
   }
