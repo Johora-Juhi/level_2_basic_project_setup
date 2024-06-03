@@ -63,10 +63,10 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   //   return fieldsQuery;
 };
 
-const getSingleStudentFromDB = async (studentId: string) => {
-  // const result = await Student.findOne({ id: studentId });
+const getSingleStudentFromDB = async (id: string) => {
+  // const result = await Student.findOne({ id: id });
 
-  const result = await Student.findOne({ id: studentId })
+  const result = await Student.findById(id)
     .populate("user")
     .populate("admissionSemester")
     .populate({
@@ -79,10 +79,10 @@ const getSingleStudentFromDB = async (studentId: string) => {
 };
 
 const updateSingleStudentIntoDB = async (
-  studentId: string,
+  id: string,
   payload: Partial<TStudent>
 ) => {
-  // const result = await Student.findOne({ id: studentId });
+  // const result = await Student.findOne({ id: id });
 
   const { name, guardian, localGuardian, ...remainingStudentData } = payload;
 
@@ -107,15 +107,12 @@ const updateSingleStudentIntoDB = async (
     }
   }
   console.log(modifiedUpdateData);
-  const result = await Student.findOneAndUpdate(
-    { id: studentId },
-    modifiedUpdateData
-  );
+  const result = await Student.findByIdAndUpdate(id, modifiedUpdateData);
   return result;
 };
 
-const deleteStudentFromDB = async (studentId: string) => {
-  if (!(await Student.isStudentExists(studentId))) {
+const deleteStudentFromDB = async (id: string) => {
+  if (!(await Student.isStudentExists(id))) {
     throw new Error("User does not existss");
   }
 
@@ -124,8 +121,8 @@ const deleteStudentFromDB = async (studentId: string) => {
   try {
     session.startTransaction();
 
-    const deletedStudent = await Student.updateOne(
-      { id: studentId },
+    const deletedStudent = await Student.findByIdAndUpdate(
+      id,
       { isDeleted: true },
       { new: true, session }
     );
@@ -133,8 +130,8 @@ const deleteStudentFromDB = async (studentId: string) => {
     if (!deletedStudent) {
       throw new AppError(httpStatus.BAD_REQUEST, "Error deletin Student");
     }
-    const deletedUser = await User.updateOne(
-      { id: studentId },
+    const deletedUser = await User.findByIdAndUpdate(
+      id,
       { isDeleted: true },
       { new: true, session }
     );

@@ -132,7 +132,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
 // virtual
 
 studentSchema.virtual("fullname").get(function () {
-  return `${this.name.firstName} ${this.name.middleName} ${this.name.middleName}`;
+  return `${this?.name?.firstName} ${this?.name?.middleName} ${this?.name?.middleName}`;
 });
 
 // for creatin custom static method
@@ -153,10 +153,10 @@ studentSchema.pre("find", async function (next) {
   next();
 });
 
-studentSchema.pre("findOne", async function (next) {
-  // this.find({ isDeleted: { $ne: true } });
-  next();
-});
+// studentSchema.pre("findOne", async function (next) {
+//   // this.find({ isDeleted: { $ne: true } });
+//   next();
+// });
 
 // {$match : { id : studentId}}
 
