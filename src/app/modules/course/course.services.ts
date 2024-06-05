@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { courseSearchableFields } from "./course.constants";
-import { TCourse } from "./course.interface";
+import { TCourse, TCourseFaculties } from "./course.interface";
 import { Course } from "./course.model";
 
 const createCourseIntoDB = async (payload: TCourse) => {
@@ -35,6 +35,7 @@ const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
+
     const updateCourse = await Course.findByIdAndUpdate(
       id,
       remainingCourseData,
@@ -72,19 +73,19 @@ const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
       const newPreRequisiteCourses = await Course.findByIdAndUpdate(id, {
         $addToSet: { preRequisiteCourses: { $each: newPreRequisites } },
       });
-    }
 
-    if (!newPreRequisiteCourses) {
-      throw new Error("Error inserting new preRequisite Course Data");
+      if (!newPreRequisiteCourses) {
+        throw new Error("Error inserting new preRequisite Course Data");
+      }
     }
 
     const result = await Course.findById(id).populate(
       "preRequisiteCourses.course"
     );
-    return result;
 
     await session.commitTransaction();
     await session.endSession();
+    return result;
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
@@ -107,10 +108,30 @@ const deleteCourseFromDB = async (id: string) => {
   return result;
 };
 
+const assignFacultiesWithCoursesIntoDB = async (
+  id: string,
+  payload: Partial<TCourseFaculties>
+) => {
+  const result = await Course.findByIdAndUpdate(
+    id,
+    {
+      course: id,
+      $addToSet: { faculties: { $each: payload } },
+    },
+    {
+      upsert: true,
+      new: true,
+    }
+  );
+
+  return result;
+};
+
 export const courseServices = {
   createCourseIntoDB,
   getCoursesFromDB,
   getSingleCourseFromDB,
   updateCourseIntoDB,
   deleteCourseFromDB,
+  assignFacultiesWithCoursesIntoDB,
 };
