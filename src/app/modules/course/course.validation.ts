@@ -10,10 +10,14 @@ const courseValidationSchema = z.object({
     prefix: z.string(),
     code: z.number(),
     credits: z.number(),
+    isDeleted: z.boolean().optional(),
     preRequisiteCourses: z.array(preRequitionValidationSchema).optional(),
   }),
 });
 
+const updateValidationSchema = courseValidationSchema.partial();
+
 export const courseValidations = {
   courseValidationSchema,
+  updateValidationSchema,
 };
