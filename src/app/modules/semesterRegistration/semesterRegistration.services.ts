@@ -4,6 +4,7 @@ import { AcademicSemester } from "../academicSemester/academicSemester.model";
 import { TSemesterRegistration } from "./semesterRegistration.interface";
 import { SemesterRegistration } from "./semesterRegistration.model";
 import QueryBuilder from "../../builder/QueryBuilder";
+import { registrationStatus } from "./semesterRegistration.constants";
 
 const createSemesterRegistrationIntoDB = async (
   payload: TSemesterRegistration
@@ -36,10 +37,10 @@ const createSemesterRegistrationIntoDB = async (
   const ongoingOrUpcomingSemester = await SemesterRegistration.findOne({
     $or: [
       {
-        status: "Upcoming",
+        status: registrationStatus.Upcoming,
       },
       {
-        status: "Ongoing",
+        status: registrationStatus.Ongoing,
       },
     ],
   });
@@ -88,15 +89,40 @@ const updateSemesterRegistrationIntoDB = async (
   }
 
   const registeredSemesterStatus = registeredSemester?.status;
+  const requestedStatus = payload?.status;
 
-  if (registeredSemesterStatus === "Ended") {
+  if (registeredSemesterStatus === registrationStatus.Ended) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
       `This semester already ${registeredSemesterStatus}`
     );
   }
 
-  return payload;
+  if (
+    registeredSemesterStatus === registrationStatus.Upcoming &&
+    requestedStatus === registrationStatus.Ended
+  ) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `You can not change status from ${registeredSemesterStatus} to ${requestedStatus}`
+    );
+  }
+
+  if (
+    registeredSemesterStatus === registrationStatus.Ongoing &&
+    requestedStatus === registrationStatus.Upcoming
+  ) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `You can not change status from ${registeredSemesterStatus} to ${requestedStatus}`
+    );
+  }
+
+  const result = await SemesterRegistration.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+  return result;
 };
 
 export const semesterRegistrationServices = {
