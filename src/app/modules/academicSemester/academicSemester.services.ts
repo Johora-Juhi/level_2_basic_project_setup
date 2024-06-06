@@ -41,12 +41,12 @@ const updateAcademicSemesterIntoDB = async (
 };
 
 const getAllAcademicSemesterFromDB = async () => {
-  const result = AcademicSemester.find({});
+  const result = await AcademicSemester.find({});
   return result;
 };
 
 const getSingleAcademicSemesterFromDB = async (id: string) => {
-  const result = AcademicSemester.findById(id);
+  const result = await AcademicSemester.findById(id);
   return result;
 };
 
