@@ -12,7 +12,6 @@ const createSemesterRegistrationIntoDB = async (
   const academicSemester = payload?.academicSemester;
 
   // check if the semester exists
-
   const isSemesterExists = await AcademicSemester.findById(academicSemester);
 
   if (!isSemesterExists) {
