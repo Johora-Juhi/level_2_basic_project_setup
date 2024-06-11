@@ -7,6 +7,7 @@ import { AcademicFaculty } from "../academicFaculty/academicFaculty.model";
 import { AcademicDepartment } from "../academicDepartment/academicDepartment.model";
 import { Course } from "../course/course.model";
 import { Faculty } from "../faculty/faculty.model";
+import { hasTimeConflict } from "./offeredCourses.utils";
 
 const createOfferedCoursesIntoDB = async (payload: TOfferedCourses) => {
   const {
@@ -91,25 +92,18 @@ const createOfferedCoursesIntoDB = async (payload: TOfferedCourses) => {
     endTime,
   };
 
-  const assignedSchedule = await OfferedCourse.find({
+  const assignedSchedules = await OfferedCourse.find({
     semesterRegistration,
     faculty,
     days: { $in: days },
   }).select("days startTime endTime");
 
-  assignedSchedule.forEach((schedule) => {
-    const assignedStartTime = new Date(`1970-01-01T${schedule.startTime}`);
-    const assignedEndTime = new Date(`1970-01-01T${schedule.endTime}`);
-    const newStartTime = new Date(`1970-01-01T${newSchedule.startTime}`);
-    const newEndTime = new Date(`1970-01-01T${newSchedule.endTime}`);
-
-    if (newStartTime < assignedStartTime && newEndTime > assignedEndTime) {
-      throw new AppError(
-        httpStatus.CONFLICT,
-        `Faculty is not available at that slot! Chane the day or time..`
-      );
-    }
-  });
+  if (hasTimeConflict(assignedSchedules, newSchedule)) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      `Faculty is not available at that slot! Chane the day or time..`
+    );
+  }
 
   const result = await OfferedCourse.create({ ...payload, academicSemester });
   return result;
