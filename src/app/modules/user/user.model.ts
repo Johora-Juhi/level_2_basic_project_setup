@@ -14,6 +14,7 @@ const UserSchema = new Schema<TUser, UserModel>(
     password: {
       type: String,
       required: true,
+      select: 0,
     },
     needsPasswordChange: {
       type: Boolean,
@@ -56,7 +57,11 @@ UserSchema.post("save", function (doc, next) {
 });
 
 UserSchema.statics.isUserExists = async function (id: string) {
-  return await User.findOne({ id });
+  return await User.findOne({ id }).select(
+    "+password"
+  ); /** i have selected 0 for not fetchin the password for every find operation, 
+  so where i need to access it i have to add it in the select with + so that it comes with other data,
+   otherwise it will onkly fetch password data */
 };
 
 UserSchema.statics.isPasswordMatched = async function (
