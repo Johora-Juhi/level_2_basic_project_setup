@@ -1,4 +1,5 @@
 import { Model } from "mongoose";
+import { USER_ROLE } from "./user.constants";
 
 export interface TUser {
   id: string;
@@ -22,3 +23,5 @@ export interface UserModel extends Model<TUser> {
     hashedPassword: string
   ): Promise<boolean>;
 }
+
+export type TUserRole = keyof typeof USER_ROLE;
