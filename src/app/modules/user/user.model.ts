@@ -78,6 +78,7 @@ UserSchema.statics.isJWTIssuedBeforePasswordChange = async function (
   JWTIssuedAt: number,
   passwordChangedAt: Date
 ) {
-  
+  const passwordChangedAtInMiliSec = new Date(passwordChangedAt).getSeconds();
+  return passwordChangedAtInMiliSec > JWTIssuedAt;
 };
 export const User = model<TUser, UserModel>("User", UserSchema);
